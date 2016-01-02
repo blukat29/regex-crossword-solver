@@ -1,21 +1,10 @@
 import z3
-import regex
-import gen
+from regex_parser import RegexParser
+from regex_solver import RegexSolver
 
 def solve_crossword(rows, cols):
     row_cnt = len(rows)
     col_cnt = len(cols)
-
-    parser = regex.RegexParser()
-    row_r = [None]*row_cnt
-    for i in range(row_cnt):
-        row_r[i] = parser.parse(rows[i])
-    col_r = [None]*col_cnt
-    for j in range(col_cnt):
-        col_r[j] = parser.parse(cols[j])
-
-    cvt_row = gen.Converter(col_cnt)
-    cvt_col = gen.Converter(row_cnt)
 
     x = [[None]*col_cnt for _ in range(row_cnt)]
     for i in range(row_cnt):
@@ -25,11 +14,11 @@ def solve_crossword(rows, cols):
     solver = z3.Solver()
     for i in range(row_cnt):
         v = x[i]
-        e = cvt_row.sat_expr(v, row_r[i]['root'])
+        e = RegexSolver(col_cnt, rows[i], v).sat_expr()
         solver.add(e)
     for j in range(col_cnt):
         v = map(lambda x: x[j], x)
-        e = cvt_col.sat_expr(v, col_r[j]['root'])
+        e = RegexSolver(row_cnt, cols[j], v).sat_expr()
         solver.add(e)
     check = solver.check()
     if check == z3.sat:
