@@ -45,6 +45,7 @@ class RegexParser:
     def p_expr_group(self, p):
         """expr : LPAREN expr RPAREN"""
         p[0] = p[2]
+        self.groups.append(p[2])
     def p_expr_star(self, p):
         """expr : expr STAR"""
         p[0] = (STAR, p[1])
@@ -110,5 +111,7 @@ class RegexParser:
         self.tokens = self.lexer.tokens
         self.parser = yacc.yacc(module=self)
     def parse(self, data):
-        return self.parser.parse(data, self.lexer.lexer)
+        self.groups = []
+        root = self.parser.parse(data, self.lexer.lexer)
+        return {'groups': self.groups, 'root': root}
 

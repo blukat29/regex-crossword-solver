@@ -25,11 +25,11 @@ def solve_crossword(rows, cols):
     solver = z3.Solver()
     for i in range(row_cnt):
         v = x[i]
-        e = cvt_row.sat_expr(v, row_r[i])
+        e = cvt_row.sat_expr(v, row_r[i]['root'])
         solver.add(e)
     for j in range(col_cnt):
         v = map(lambda x: x[j], x)
-        e = cvt_col.sat_expr(v, col_r[j])
+        e = cvt_col.sat_expr(v, col_r[j]['root'])
         solver.add(e)
     check = solver.check()
     if check == z3.sat:
