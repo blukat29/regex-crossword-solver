@@ -41,3 +41,5 @@ print solve_crossword(["[a]+","b+"], [".?.+",".+"])
 print solve_crossword(
         ["[AWE]+","[ALP]+K","(PR|ER|EP)"],
         ["[BQW](PR|LE)","[RANK]+"])
+
+print solve_crossword(["(..)\\1"], ["A|B","B|C","A|S","B|D"])

@@ -4,12 +4,19 @@ import regex_parser
 _parser = regex_parser.RegexParser()
 
 class RegexSolver:
+    scratch_var_cnt = 0
+
     def __init__(self, length, regex, x):
         self.length = length
         parse_result = _parser.parse(regex)
         self.regex = parse_result['root']
         self.groups = parse_result['groups']
         self.x = x
+        self.p = []
+        self.possible_pos = [set() for _ in range(len(self.groups))]
+        for i in range(len(self.groups)):
+            self.p.append(z3.Int("p_%d" % RegexSolver.scratch_var_cnt))
+            RegexSolver.scratch_var_cnt += 1
 
     def _len_set(self, r):
         ty = r[0]
@@ -52,6 +59,10 @@ class RegexSolver:
 
         elif ty == regex_parser.GROUP:
             return self._len_set(r[2])
+
+        elif ty == regex_parser.BACKREF:
+            idx = r[1] - 1
+            return self._len_set(self.groups[idx])
 
         else:
             raise ValueError("Unknown regex_parser type '%s'" % repr(ty))
@@ -110,7 +121,24 @@ class RegexSolver:
             return expr
 
         elif ty == regex_parser.GROUP:
-            return self._sat_expr(x, r[2], i, l)
+            idx = r[1] - 1
+            inner = r[2]
+            expr = z3.And(
+                    (self.p[idx] == i),
+                    self._sat_expr(x, inner, i, l)
+            )
+            self.possible_pos[idx].add(i)
+            return expr
+
+        elif ty == regex_parser.BACKREF:
+            idx = r[1] - 1
+            expr = False
+            for j in self.possible_pos[idx]:
+                clause = (self.p[idx] == j)
+                for k in range(l):
+                    clause = z3.And(clause, (x[i+k] == x[j+k]))
+                expr = z3.Or(expr, clause)
+            return expr
 
         else:
             raise ValueError("Unknown regex_parser type '%s'" % repr(ty))
