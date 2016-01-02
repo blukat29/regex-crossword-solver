@@ -55,3 +55,7 @@ print solve_crossword(
 print solve_crossword(
         ["[QA].[WEST]*","(HE|RT|TK)*.","(RE|QR)[QUART]*","[EUW]*S[RITE]*","(.)(.)\\2\\1[WE]"],
         ["[ABC]*(.)\\1(ME|UO)","(.)T*E*\\1","[HAS]*(SN|PA)","(WE|GA|AL)T*O+","(EG|BEEE)[WIQ]*"])
+
+print solve_crossword(
+        ["[IT](O)*(BE|AD)*\\1","[NORMAL]+T{2}",".*(XA|BE).*","(EG|UL){2}[ALF]*","[REQ]*(G|P)(.)+"],
+        ["[RUTH]*(OE|EO)[RB]*","(BG|ON|KK)+[RIF]+","(MN|BO|FI)[EU]{2,}","(KT|AL|ET)+G","[OH](PR|AX|TR)+"])
