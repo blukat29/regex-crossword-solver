@@ -11,6 +11,7 @@ class RegexSolver:
         parse_result = _parser.parse(regex)
         self.regex = parse_result['root']
         self.groups = parse_result['groups']
+        self.backrefs = parse_result['backrefs']
         self.x = x
         self.p = []
         self.possible_pos = [set() for _ in range(len(self.groups))]
@@ -123,11 +124,14 @@ class RegexSolver:
         elif ty == regex_parser.GROUP:
             idx = r[1] - 1
             inner = r[2]
-            expr = z3.And(
-                    (self.p[idx] == i),
-                    self._sat_expr(x, inner, i, l)
-            )
-            self.possible_pos[idx].add(i)
+            if (idx+1) in self.backrefs:
+                expr = z3.And(
+                        (self.p[idx] == i),
+                        self._sat_expr(x, inner, i, l)
+                )
+                self.possible_pos[idx].add(i)
+            else:
+                expr = self._sat_expr(x, inner, i, l)
             return expr
 
         elif ty == regex_parser.BACKREF:

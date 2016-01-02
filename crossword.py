@@ -43,3 +43,7 @@ print solve_crossword(
         ["[BQW](PR|LE)","[RANK]+"])
 
 print solve_crossword(["(..)\\1"], ["A|B","B|C","A|S","B|D"])
+
+print solve_crossword(
+        ["(Y|F)(.)\\2[DAF]\\1","(U|O|I)*T[FRO]+","[KANE]*[GIN]*"],
+        ["(FI|A)+","(YE|OT)K","(.)[IF]+","[NODE]+","(FY|F|RG)+"])

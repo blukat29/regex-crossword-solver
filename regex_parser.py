@@ -53,6 +53,7 @@ class RegexParser:
         expr : BACKSLASH DIGIT
         """
         p[0] = (BACKREF, int(p[2]))
+        self.backrefs.add(int(p[2]))
     def p_expr_group(self, p):
         """expr : LPAREN expr RPAREN"""
         self.groups.append(p[2])
@@ -126,6 +127,7 @@ class RegexParser:
         self.parser = yacc.yacc(module=self)
     def parse(self, data):
         self.groups = []
+        self.backrefs = set()
         root = self.parser.parse(data, self.lexer.lexer)
-        return {'groups': self.groups, 'root': root}
+        return {'groups': self.groups, 'root': root, 'backrefs': self.backrefs}
 
