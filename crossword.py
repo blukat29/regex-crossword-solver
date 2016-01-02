@@ -47,3 +47,11 @@ print solve_crossword(["(..)\\1"], ["A|B","B|C","A|S","B|D"])
 print solve_crossword(
         ["(Y|F)(.)\\2[DAF]\\1","(U|O|I)*T[FRO]+","[KANE]*[GIN]*"],
         ["(FI|A)+","(YE|OT)K","(.)[IF]+","[NODE]+","(FY|F|RG)+"])
+
+print solve_crossword(
+        ["[UGLER]*","[CAST]*REX[PEA]*","[SIRES]*","(L|OFT|ON)*","H*(AY|ED)*"],
+        ["[ARK]*O.*","(.).*\\1N\\1","(SOD|DO|GE)*","[FAXUS]*","[LOPITY]*"])
+
+print solve_crossword(
+        ["[QA].[WEST]*","(HE|RT|TK)*.","(RE|QR)[QUART]*","[EUW]*S[RITE]*","(.)(.)\\2\\1[WE]"],
+        ["[ABC]*(.)\\1(ME|UO)","(.)T*E*\\1","[HAS]*(SN|PA)","(WE|GA|AL)T*O+","(EG|BEEE)[WIQ]*"])

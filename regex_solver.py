@@ -19,6 +19,14 @@ class RegexSolver:
             self.p.append(z3.Int("p_%d" % RegexSolver.scratch_var_cnt))
             RegexSolver.scratch_var_cnt += 1
 
+    def _set_sum(self, a, b):
+        s = set()
+        for i in a:
+            for j in b:
+                if (i + j) <= self.length:
+                    s.add(i + j)
+        return s
+
     def _len_set(self, r):
         ty = r[0]
 
@@ -33,12 +41,13 @@ class RegexSolver:
 
         elif ty == regex_parser.STAR:
             # LEN(r) = { k * l <= MAX : k = 0,1,2,... && l in len_set(r) }
-            s = set()
-            for l in self._len_set(r[1]):
-                k = 0
-                while k * l <= self.length:
-                    s.add(k * l)
-                    k += 1
+            l = self._len_set(r[1])
+            s = set([0])
+            while True:
+                inc = self._set_sum(s, l)
+                if s | inc == s:
+                    break
+                s = s | inc
             return s
 
         elif ty == regex_parser.BAR:
@@ -52,11 +61,7 @@ class RegexSolver:
             s = set()
             l1 = self._len_set(r[1])
             l2 = self._len_set(r[2])
-            for i in l1:
-                for j in l2:
-                    if i + j <= self.length:
-                        s.add(i + j)
-            return s
+            return self._set_sum(l1, l2)
 
         elif ty == regex_parser.GROUP:
             return self._len_set(r[2])
