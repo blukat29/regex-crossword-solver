@@ -45,5 +45,10 @@ def solve_crossword(rows, cols):
 
 print solve_crossword(["18|19|20","(6|7|8|9)."], [".(2|4|8|0)","56|94|73"])
 
-print solve_crossword(["HE|LL|OO*","[PLEASE]*"], ["[^SPEAK]*","EP|IP|EF"])
+print solve_crossword(["HE|LL|O+","[PLEASE]+"], ["[^SPEAK]+","EP|IP|EF"])
 
+print solve_crossword(["[a]+","b+"], [".?.+",".+"])
+
+print solve_crossword(
+        ["[AWE]+","[ALP]+K","(PR|ER|EP)"],
+        ["[BQW](PR|LE)","[RANK]+"])

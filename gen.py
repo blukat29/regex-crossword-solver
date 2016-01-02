@@ -8,7 +8,10 @@ class Converter:
     def _len_set(self, r):
         ty = r[0]
 
-        if ty == regex.CHAR:
+        if ty == regex.EMPTY:
+            return set([0])
+
+        elif ty == regex.CHAR:
             return set([1])
 
         elif ty == regex.DOT:
@@ -52,7 +55,10 @@ class Converter:
 
         ty = r[0]
 
-        if ty == regex.CHAR:
+        if ty == regex.EMPTY:
+            return True
+
+        elif ty == regex.CHAR:
             return (x[i] == ord(r[1]))
 
         elif ty == regex.DOT:

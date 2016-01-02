@@ -2,7 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 import string
 
-[CHAR, DOT, STAR, BAR, CONCAT] = range(5)
+[EMPTY, CHAR, DOT, STAR, BAR, CONCAT] = range(6)
 CHARSET = string.lowercase + string.uppercase + string.digits + ' '
 
 class RegexLexer:
@@ -11,6 +11,7 @@ class RegexLexer:
         "STAR", "BAR",
         "LPAREN", "RPAREN",
         "LBRACKET", "RBRACKET", "DASH", "CARET",
+        "PLUS", "QUESTION",
     )
     def t_CHAR(self, t):
         r"[0-9a-zA-Z\s]"
@@ -24,6 +25,8 @@ class RegexLexer:
     t_RBRACKET = r"\]"
     t_DASH = r"\-"
     t_CARET = r"\^"
+    t_PLUS = r"\+"
+    t_QUESTION = r"\?"
     def t_error(self, t):
         print "Error parsing '%s'" % t.value[0]
     def __init__(self):
@@ -34,7 +37,7 @@ class RegexParser:
         ('left', 'BAR'),
         ('left', 'DOT', 'CHAR'),
         ('left', 'CONCAT'),
-        ('right', 'STAR'),
+        ('right', 'STAR', 'PLUS', 'QUESTION'),
     )
     def p_regex_expr(self, p):
         """regex : expr"""
@@ -45,6 +48,12 @@ class RegexParser:
     def p_expr_star(self, p):
         """expr : expr STAR"""
         p[0] = (STAR, p[1])
+    def p_expr_plus(self, p):
+        """expr : expr PLUS"""
+        p[0] = (CONCAT, p[1], (STAR, p[1]))
+    def p_expr_question(self, p):
+        """expr : expr QUESTION"""
+        p[0] = (BAR, p[1], (EMPTY,))
     def p_expr_concat(self, p):
         """expr : expr expr %prec CONCAT"""
         p[0] = (CONCAT, p[1], p[2])
