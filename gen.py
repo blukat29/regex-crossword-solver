@@ -44,6 +44,9 @@ class Converter:
                         s.add(i + j)
             return s
 
+        elif ty == regex.GROUP:
+            return self._len_set(r[2])
+
         else:
             raise ValueError("Unknown regex type '%s'" % repr(ty))
 
@@ -99,6 +102,9 @@ class Converter:
                     self._sat_expr(x, r[2], i + l1, l - l1)
                 ))
             return expr
+
+        elif ty == regex.GROUP:
+            return self._sat_expr(x, r[2], i, l)
 
         else:
             raise ValueError("Unknown regex type '%s'" % repr(ty))

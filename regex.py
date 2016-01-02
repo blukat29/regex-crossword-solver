@@ -2,7 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 import string
 
-[EMPTY, CHAR, DOT, STAR, BAR, CONCAT] = range(6)
+[EMPTY, CHAR, DOT, STAR, BAR, CONCAT, GROUP, BACKREF] = range(8)
 CHARSET = string.lowercase + string.uppercase + string.digits + ' '
 
 class RegexLexer:
@@ -11,10 +11,13 @@ class RegexLexer:
         "STAR", "BAR",
         "LPAREN", "RPAREN",
         "LBRACKET", "RBRACKET", "DASH", "CARET",
-        "PLUS", "QUESTION",
+        "PLUS", "QUESTION", "BACKSLASH", "DIGIT"
     )
     def t_CHAR(self, t):
-        r"[0-9a-zA-Z\s]"
+        r"[a-zA-Z\s]"
+        return t;
+    def t_DIGIT(self, t):
+        r"[0-9]"
         return t;
     t_DOT = r"\."
     t_STAR = r"\*"
@@ -27,6 +30,7 @@ class RegexLexer:
     t_CARET = r"\^"
     t_PLUS = r"\+"
     t_QUESTION = r"\?"
+    t_BACKSLASH = r"\\"
     def t_error(self, t):
         print "Error parsing '%s'" % t.value[0]
     def __init__(self):
@@ -35,17 +39,24 @@ class RegexLexer:
 class RegexParser:
     precedence = (
         ('left', 'BAR'),
-        ('left', 'DOT', 'CHAR'),
+        ('left', 'DIGIT', 'DOT', 'CHAR'),
         ('left', 'CONCAT'),
         ('right', 'STAR', 'PLUS', 'QUESTION'),
+        ('left', 'LBRACKET', 'LPAREN'),
+        ('left', 'BACKSLASH'),
     )
     def p_regex_expr(self, p):
         """regex : expr"""
         p[0] = p[1]
+    def p_expr_backslash(self, p):
+        """
+        expr : BACKSLASH DIGIT
+        """
+        p[0] = (BACKREF, int(p[2]))
     def p_expr_group(self, p):
         """expr : LPAREN expr RPAREN"""
-        p[0] = p[2]
         self.groups.append(p[2])
+        p[0] = (GROUP, len(self.groups), p[2])
     def p_expr_star(self, p):
         """expr : expr STAR"""
         p[0] = (STAR, p[1])
@@ -62,7 +73,10 @@ class RegexParser:
         """expr : DOT"""
         p[0] = (DOT,)
     def p_expr_char(self, p):
-        """expr : CHAR"""
+        """
+        expr : CHAR
+             | DIGIT
+        """
         p[0] = (CHAR, p[1])
     def p_expr_or(self, p):
         """expr : expr BAR expr"""
