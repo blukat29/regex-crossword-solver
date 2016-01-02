@@ -2,7 +2,7 @@ import z3
 import regex
 import gen
 
-def solve_crossword(rows, cols, charset):
+def solve_crossword(rows, cols):
     row_cnt = len(rows)
     col_cnt = len(cols)
 
@@ -14,8 +14,8 @@ def solve_crossword(rows, cols, charset):
     for j in range(col_cnt):
         col_r[j] = parser.parse(cols[j])
 
-    cvt_row = gen.Converter(col_cnt, charset)
-    cvt_col = gen.Converter(row_cnt, charset)
+    cvt_row = gen.Converter(col_cnt)
+    cvt_col = gen.Converter(row_cnt)
 
     x = [[None]*col_cnt for _ in range(row_cnt)]
     for i in range(row_cnt):
@@ -43,14 +43,7 @@ def solve_crossword(rows, cols, charset):
     else:
         return None
 
-charset = "0123456789"
-rows = [
-    "18|19|20",
-    "(6|7|8|9)."
-]
-cols = [
-    ".(2|4|8|0)",
-    "56|94|73"
-]
-print solve_crossword(rows, cols, charset)
+print solve_crossword(["18|19|20","(6|7|8|9)."], [".(2|4|8|0)","56|94|73"])
+
+print solve_crossword(["HE|LL|OO*","[PLEASE]*"], ["[^SPEAK]*","EP|IP|EF"])
 

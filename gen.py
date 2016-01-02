@@ -2,9 +2,8 @@ import z3
 import regex
 
 class Converter:
-    def __init__(self, length, charset):
+    def __init__(self, length):
         self.length = length
-        self.charset = charset
 
     def _len_set(self, r):
         ty = r[0]
@@ -58,7 +57,7 @@ class Converter:
 
         elif ty == regex.DOT:
             expr = False
-            for ch in self.charset:
+            for ch in regex.CHARSET:
                 expr = z3.Or(expr, x[i] == ord(ch))
             return expr
 
