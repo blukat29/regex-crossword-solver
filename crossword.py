@@ -59,3 +59,10 @@ print solve_crossword(
 print solve_crossword(
         ["[IT](O)*(BE|AD)*\\1","[NORMAL]+T{2}",".*(XA|BE).*","(EG|UL){2}[ALF]*","[REQ]*(G|P)(.)+"],
         ["[RUTH]*(OE|EO)[RB]*","(BG|ON|KK)+[RIF]+","(MN|BO|FI)[EU]{2,}","(KT|AL|ET)+G","[OH](PR|AX|TR)+"])
+
+print solve_crossword(
+        ["[RA](A|E)[V\s]\\1[NG]+\\1","[SHI\s]+.{2}","(FO|UL|ED)*[DAN\s]+",
+         "[TORM]+ST(U|\s|N|K)*","(F|N)(.)[RUNT]+\\2[CL]*","\s[URM]*[ERD]{3,}"],
+        ["[RQ\s]*(N|U|M|\s){3,}","(N|I|E)[HOLE]{2,}A(M|N)","[VIT]{2}[T\s]?(STU|PLO)+",
+         "(E|\s)(A|S|K)*.U?[FR]","(F|A|N)(\s)\\1\\2[RIF](K|D)+","(G|A|\s)(DU|F|SET)+[WAE]+",
+         "[ASK]?(LR|EO|\sN)+"])
