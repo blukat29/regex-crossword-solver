@@ -1,5 +1,4 @@
-from crossword import solve_crossword
-from regex_parser import RegexParser
+from crossword import solve_crossword, RegexParser
 import time
 
 # Compile parser before start testing
