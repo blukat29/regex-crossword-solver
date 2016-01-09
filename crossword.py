@@ -1,7 +1,7 @@
 import z3
 from regex_solver import RegexSolver
 
-def solve_crossword(rows, cols):
+def solve_crossword(rows, cols, rows2=None, cols2=None):
     row_cnt = len(rows)
     col_cnt = len(cols)
 
@@ -15,10 +15,16 @@ def solve_crossword(rows, cols):
         v = x[i]
         e = RegexSolver(col_cnt, rows[i], v).sat_expr()
         solver.add(e)
+        if rows2:
+            e = RegexSolver(col_cnt, rows2[i], v).sat_expr()
+            solver.add(e)
     for j in range(col_cnt):
         v = map(lambda x: x[j], x)
         e = RegexSolver(row_cnt, cols[j], v).sat_expr()
         solver.add(e)
+        if cols2:
+            e = RegexSolver(row_cnt, cols2[j], v).sat_expr()
+            solver.add(e)
     check = solver.check()
     if check == z3.sat:
         model = solver.model()

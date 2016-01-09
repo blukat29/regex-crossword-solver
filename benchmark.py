@@ -9,7 +9,7 @@ messages = []
 times = []
 quiet = False
 
-def test_case(rows, cols, title=""):
+def test_case(rows, cols, title="", rows2=None, cols2=None):
     message = "%s (%d x %d)" % (title, len(rows), len(cols))
     messages.append(message)
     print message
@@ -19,7 +19,7 @@ def test_case(rows, cols, title=""):
         print "== cols:"
         print "\n".join(cols)
     t0 = time.time()
-    result = solve_crossword(rows, cols)
+    result = solve_crossword(rows, cols, rows2, cols2)
     t1 = time.time()
     times.append(t1 - t0)
     if not quiet:
@@ -65,6 +65,20 @@ if __name__ == '__main__':
              "(E|\s)(A|S|K)*.U?[FR]","(F|A|N)(\s)\\1\\2[RIF](K|D)+","(G|A|\s)(DU|F|SET)+[WAE]+",
              "[ASK]?(LR|EO|\sN)+"],
             "Large + \s test")
+
+    test_case(
+            ["[A-GN-Z]+"],
+            ["[D-HJ-M]","[^A-RU-Z]"],
+            "double cross test 1",
+            ["[^A-DI-S]+"],
+            ["[^F-KM-Z]","[A-KS-V]"])
+
+    test_case(
+            ["(CAT|AaT)+","[MAa\sE]+"],
+            ["[^MCI]+",".A","(TM|BF)"],
+            "double cross test 2",
+            ["[^KI\sP]+","(M|APS|EA)*"],
+            ["[AI][E\s]","[AaZ]+","[\sTaM]+"])
 
     print "== Summary =="
     for idx, message in enumerate(messages):
