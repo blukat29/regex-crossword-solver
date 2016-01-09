@@ -21,6 +21,12 @@ Works well with syntaxes like `[A-Z]`, `[^ABC]`, `{m,n}`, `+`, `?`, `|`, `\1`. C
 
 Cannot handle special characters (`,`,`-`,`^`,`'`) when they are not part of bracket syntax (`[^A-F]`) nor brace syntax (`{2,3}`).
 
+### Run tests
+
+```
+nosetests
+```
+
 ### How it works
 
 Please refer to [this post](http://blukat29.github.io/2016/01/regex-crossword-solver/).

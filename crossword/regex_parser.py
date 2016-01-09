@@ -115,6 +115,7 @@ class RegexParser:
     def p_inbracket_single(self, p):
         """
         inbracket : CHAR inbracket
+                  | DIGIT inbracket
                   | DASH inbracket
                   | CARET inbracket
         """
