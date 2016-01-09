@@ -163,6 +163,10 @@ class RegexParser:
         self.parser = yacc.yacc(module=self)
     def parse(self, data):
         data = data.replace("\\s"," ").replace("\\d","(0|1|2|3|4|5|6|7|8|9)")
+        data = data.replace("\\w","[A-Z]")
+        data = data.replace("\1","\\1").replace("\2","\\2").replace("\3","\\3")
+        data = data.replace("\4","\\4").replace("\5","\\5").replace("\6","\\6")
+        data = data.replace("\7","\\7").replace("\8","\\8").replace("\9","\\9")
         self.groups = []
         self.backrefs = set()
         root = self.parser.parse(data, self.lexer.lexer)
