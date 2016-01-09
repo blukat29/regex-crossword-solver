@@ -3,7 +3,7 @@ import ply.yacc as yacc
 import string
 
 [EMPTY, CHAR, DOT, STAR, BAR, CONCAT, GROUP, BACKREF] = range(8)
-CHARSET = string.lowercase + string.uppercase + string.digits + ' '
+CHARSET = string.lowercase + string.uppercase + string.digits + " :/\'"
 
 class RegexLexer:
     tokens = (
@@ -15,7 +15,7 @@ class RegexLexer:
         "LBRACE", "RBRACE", "COMMA",
     )
     def t_CHAR(self, t):
-        r"[a-zA-Z\s]"
+        r"[a-zA-Z\s:/']"
         return t;
     def t_DIGIT(self, t):
         r"[0-9]"
@@ -58,6 +58,25 @@ class RegexParser:
         """
         p[0] = (BACKREF, int(p[2]))
         self.backrefs.add(int(p[2]))
+    def p_expr_escape(self, p):
+        """
+        expr : BACKSLASH DOT
+             | BACKSLASH STAR
+             | BACKSLASH BAR
+             | BACKSLASH LPAREN
+             | BACKSLASH RPAREN
+             | BACKSLASH LBRACKET
+             | BACKSLASH RBRACKET
+             | BACKSLASH DASH
+             | BACKSLASH CARET
+             | BACKSLASH PLUS
+             | BACKSLASH QUESTION
+             | BACKSLASH BACKSLASH
+             | BACKSLASH LBRACE
+             | BACKSLASH RBRACE
+             | BACKSLASH COMMA
+        """
+        p[0] = (CHAR, p[2])
     def p_expr_group(self, p):
         """expr : LPAREN expr RPAREN"""
         self.groups.append(p[2])

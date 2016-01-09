@@ -15,6 +15,26 @@ class SimpleTest(ParserTestCase):
     def test_char(self):
         self.do_test("A", (CHAR, 'A'))
         self.do_test("1", (CHAR, '1'))
+        self.do_test("\s", (CHAR, ' '))
+        self.do_test(":", (CHAR, ':'))
+        self.do_test("/", (CHAR, '/'))
+        self.do_test("'", (CHAR, '\''))
+    def test_escape(self):
+        self.do_test("\.", (CHAR, '.'))
+        self.do_test("\*", (CHAR, '*'))
+        self.do_test("\|", (CHAR, '|'))
+        self.do_test("\(", (CHAR, '('))
+        self.do_test("\)", (CHAR, ')'))
+        self.do_test("\[", (CHAR, '['))
+        self.do_test("\]", (CHAR, ']'))
+        self.do_test("\-", (CHAR, '-'))
+        self.do_test("\^", (CHAR, '^'))
+        self.do_test("\+", (CHAR, '+'))
+        self.do_test("\?", (CHAR, '?'))
+        self.do_test("\\\\", (CHAR, '\\'))
+        self.do_test("\{", (CHAR, '{'))
+        self.do_test("\}", (CHAR, '}'))
+        self.do_test("\,", (CHAR, ','))
     def test_dot(self):
         self.do_test(".", (DOT,))
     def test_bar(self):
@@ -40,7 +60,7 @@ class BracketTest(ParserTestCase):
                                               (CHAR, 'K')),
                                         (CHAR, 'L')))
     def test_negate(self):
-        self.do_test("[^a-z0-9A-X\s]", (BAR, (CHAR, 'Y'), (CHAR, 'Z')))
+        self.do_test("[^a-z0-9A-X\s:/']", (BAR, (CHAR, 'Y'), (CHAR, 'Z')))
 
 class BraceTest(ParserTestCase):
     def test_one(self):
