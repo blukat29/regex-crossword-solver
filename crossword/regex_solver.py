@@ -75,20 +75,20 @@ class RegexSolver:
 
     def _sat_expr(self, x, r, i, l):
         if l not in self._len_set(r):
-            return False
+            return z3.BoolVal(False)
         if i + l > self.length:
-            return False
+            return z3.BoolVal(False)
 
         ty = r[0]
 
         if ty == regex_parser.EMPTY:
-            return True
+            return z3.BoolVal(True)
 
         elif ty == regex_parser.CHAR:
             return (x[i] == ord(r[1]))
 
         elif ty == regex_parser.DOT:
-            expr = False
+            expr = z3.BoolVal(False)
             for ch in regex_parser.CHARSET:
                 expr = z3.Or(expr, x[i] == ord(ch))
             return expr
@@ -97,9 +97,9 @@ class RegexSolver:
             # SAT(r*, i, l) = Union for l' in LEN(r):
             #                   [ SAT(r, i, l') && SAT(r*, i+l', l-l') ]
             if l == 0:
-                return True
+                return z3.BoolVal(True)
             else:
-                expr = False
+                expr = z3.BoolVal(False)
                 for l1 in self._len_set(r[1]):
                     expr = z3.Or(expr, z3.And(
                         self._sat_expr(x, r[1], i, l1),
@@ -118,7 +118,7 @@ class RegexSolver:
         elif ty == regex_parser.CONCAT:
             # SAT(r1 r2, i, l) = Union for l1 in LEN(r1):
             #                      [ SAT(r1, i, l1) && SAT(r2, i+l1, l-l1) ]
-            expr = False
+            expr = z3.BoolVal(False)
             for l1 in self._len_set(r[1]):
                 expr = z3.Or(expr, z3.And(
                     self._sat_expr(x, r[1], i, l1),
@@ -141,7 +141,7 @@ class RegexSolver:
 
         elif ty == regex_parser.BACKREF:
             idx = r[1] - 1
-            expr = False
+            expr = z3.BoolVal(False)
             for j in self.possible_pos[idx]:
                 clause = (self.p[idx] == j)
                 for k in range(l):
