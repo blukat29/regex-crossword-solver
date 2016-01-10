@@ -27,14 +27,12 @@ class SimpleTest(ParserTestCase):
         self.do_test("\)", (CHAR, ')'))
         self.do_test("\[", (CHAR, '['))
         self.do_test("\]", (CHAR, ']'))
-        self.do_test("\-", (CHAR, '-'))
         self.do_test("\^", (CHAR, '^'))
         self.do_test("\+", (CHAR, '+'))
         self.do_test("\?", (CHAR, '?'))
         self.do_test("\\\\", (CHAR, '\\'))
         self.do_test("\{", (CHAR, '{'))
         self.do_test("\}", (CHAR, '}'))
-        self.do_test("\,", (CHAR, ','))
     def test_dot(self):
         self.do_test(".", (DOT,))
     def test_bar(self):

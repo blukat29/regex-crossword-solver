@@ -49,60 +49,71 @@ class RegexParser:
         ('left', 'LBRACKET', 'LPAREN'),
         ('left', 'BACKSLASH'),
     )
+
     def p_regex_expr(self, p):
         """regex : expr"""
         p[0] = p[1]
+
+    def p_expr_concat(self, p):
+        """expr : expr expr %prec CONCAT"""
+        p[0] = (CONCAT, p[1], p[2])
+
+    def p_expr_group(self, p):
+        """expr : LPAREN expr RPAREN"""
+        self.groups.append(p[2])
+        p[0] = (GROUP, len(self.groups), p[2])
+
+    def p_expr_star(self, p):
+        """expr : expr STAR"""
+        p[0] = (STAR, p[1])
+
+    def p_expr_plus(self, p):
+        """expr : expr PLUS"""
+        p[0] = (CONCAT, p[1], (STAR, p[1]))
+
+    def p_expr_question(self, p):
+        """expr : expr QUESTION"""
+        p[0] = (BAR, p[1], (EMPTY,))
+
+    def p_expr_dot(self, p):
+        """expr : DOT"""
+        p[0] = (DOT,)
+
+    def p_expr_char(self, p):
+        """
+        expr : CHAR
+             | DIGIT
+             | DASH
+             | COMMA
+        """
+        p[0] = (CHAR, p[1])
+
     def p_expr_backslash(self, p):
         """
         expr : BACKSLASH DIGIT
         """
         p[0] = (BACKREF, int(p[2]))
         self.backrefs.add(int(p[2]))
+
     def p_expr_escape(self, p):
         """
         expr : BACKSLASH DOT
              | BACKSLASH STAR
-             | BACKSLASH BAR
+             | BACKSLASH PLUS
+             | BACKSLASH QUESTION
+             | BACKSLASH CARET
+             | BACKSLASH BACKSLASH
              | BACKSLASH LPAREN
              | BACKSLASH RPAREN
              | BACKSLASH LBRACKET
              | BACKSLASH RBRACKET
-             | BACKSLASH DASH
-             | BACKSLASH CARET
-             | BACKSLASH PLUS
-             | BACKSLASH QUESTION
-             | BACKSLASH BACKSLASH
              | BACKSLASH LBRACE
              | BACKSLASH RBRACE
-             | BACKSLASH COMMA
+             | BACKSLASH BAR
         """
         p[0] = (CHAR, p[2])
-    def p_expr_group(self, p):
-        """expr : LPAREN expr RPAREN"""
-        self.groups.append(p[2])
-        p[0] = (GROUP, len(self.groups), p[2])
-    def p_expr_star(self, p):
-        """expr : expr STAR"""
-        p[0] = (STAR, p[1])
-    def p_expr_plus(self, p):
-        """expr : expr PLUS"""
-        p[0] = (CONCAT, p[1], (STAR, p[1]))
-    def p_expr_question(self, p):
-        """expr : expr QUESTION"""
-        p[0] = (BAR, p[1], (EMPTY,))
-    def p_expr_concat(self, p):
-        """expr : expr expr %prec CONCAT"""
-        p[0] = (CONCAT, p[1], p[2])
-    def p_expr_dot(self, p):
-        """expr : DOT"""
-        p[0] = (DOT,)
-    def p_expr_char(self, p):
-        """
-        expr : CHAR
-             | DIGIT
-        """
-        p[0] = (CHAR, p[1])
-    def p_expr_or(self, p):
+
+    def p_expr_bar(self, p):
         """expr : expr BAR expr"""
         p[0] = (BAR, p[1], p[3])
 
