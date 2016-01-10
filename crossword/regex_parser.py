@@ -46,7 +46,7 @@ class RegexParser:
         ('left', 'DIGIT', 'DOT', 'CHAR'),
         ('left', 'CONCAT'),
         ('right', 'STAR', 'PLUS', 'QUESTION', 'LBRACE', 'RBRACE'),
-        ('left', 'LBRACKET', 'LPAREN'),
+        ('left', 'LBRACKET', 'RBRACKET', 'LPAREN', 'RPAREN'),
         ('left', 'BACKSLASH'),
     )
 
@@ -135,9 +135,18 @@ class RegexParser:
         """
         inbracket_nocaret : CHAR inbracket_nocaret
                           | DIGIT inbracket_nocaret
+                          | COMMA inbracket_nocaret
         """
         p[2].add(p[1])
         p[0] = p[2]
+
+    def p_nocaret_escape(self, p):
+        """
+        inbracket_nocaret : BACKSLASH DASH inbracket_nocaret
+                          | BACKSLASH CARET inbracket_nocaret
+        """
+        p[3].add(p[2])
+        p[0] = p[3]
 
     def p_nocaret_range(self, p):
         """

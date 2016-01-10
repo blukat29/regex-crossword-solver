@@ -19,6 +19,8 @@ class SimpleTest(ParserTestCase):
         self.do_test(":", (CHAR, ':'))
         self.do_test("/", (CHAR, '/'))
         self.do_test("'", (CHAR, '\''))
+        self.do_test(",", (CHAR, ','))
+        self.do_test("-", (CHAR, '-'))
     def test_escape(self):
         self.do_test("\.", (CHAR, '.'))
         self.do_test("\*", (CHAR, '*'))
@@ -59,6 +61,9 @@ class BracketTest(ParserTestCase):
                                         (CHAR, '3')))
     def test_negate(self):
         self.do_test("[^a-z0-9A-X\s:/']", (BAR, (CHAR, 'Y'), (CHAR, 'Z')))
+    def test_special(self):
+        self.do_test("[\-\^]", (BAR, (CHAR, '-'), (CHAR, '^')))
+        self.do_test("[I,T]", (BAR, (BAR, (CHAR, 'I'), (CHAR, 'T')), (CHAR, ',')))
 
 class BraceTest(ParserTestCase):
     def test_one(self):
@@ -99,6 +104,13 @@ class GroupTest(ParserTestCase):
                                       set([1,2]))
 
 class ComplexTest(ParserTestCase):
+    def test_special_char(self):
+        self.do_test("A,", (CONCAT, (CHAR, 'A'), (CHAR, ',')))
+        self.do_test("\s9", (CONCAT, (CHAR, ' '), (CHAR, '9')))
+        self.do_test("(L|,|O)", (GROUP, 1, (BAR, (BAR, (CHAR, 'L'), (CHAR, ',')),
+                                                 (CHAR, 'O'))),
+                                [(BAR, (BAR, (CHAR, 'L'), (CHAR, ',')), (CHAR, 'O'))],
+                                set())
     def test_quantifier_precedence(self):
         self.do_test("AB*", (CONCAT, (CHAR, 'A'),
                                      (STAR, (CHAR, 'B'))))
