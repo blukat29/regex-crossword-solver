@@ -45,6 +45,7 @@ inbracket_nocaret : CHAR inbracket_nocaret
                   | "\^" inbracket_nocaret
                   | CHAR "-" CHAR inbracket_nocaret
                   | DIGIT "-" DIGIT inbracket_nocaret
+                  | (empty)
 ```
 
 Precedence

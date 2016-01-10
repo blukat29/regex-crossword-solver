@@ -54,9 +54,9 @@ class BracketTest(ParserTestCase):
                                     (CHAR, 'N')))
         self.do_test("[A-A]", (CHAR, 'A'))
         self.do_test("[X-Y3K-L]", (BAR, (BAR, (BAR, (BAR, (CHAR, 'Y'), (CHAR, 'X')),
-                                                    (CHAR, '3')),
-                                              (CHAR, 'K')),
-                                        (CHAR, 'L')))
+                                                    (CHAR, 'K')),
+                                              (CHAR, 'L')),
+                                        (CHAR, '3')))
     def test_negate(self):
         self.do_test("[^a-z0-9A-X\s:/']", (BAR, (CHAR, 'Y'), (CHAR, 'Z')))
 

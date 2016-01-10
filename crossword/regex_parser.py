@@ -119,40 +119,39 @@ class RegexParser:
 
     def p_expr_bracket(self, p):
         """expr : LBRACKET inbracket RBRACKET"""
-        expr = p[2]
-
-        if expr[0] == '^':
-            negate = True
-            expr = expr[1:]
-        else:
-            negate = False
-
-        s = set()
-        pos = 0
-        while pos < len(expr):
-            if expr[pos] == '-':
-                for ch in range(ord(expr[pos-1]), ord(expr[pos+1])+1):
-                    s.add(chr(ch))
-            else:
-                s.add(expr[pos])
-            pos += 1
-        if negate:
-            s = set(set(CHARSET) - s)
-
+        s = p[2]
         s = map(lambda x: (CHAR, x), list(s))
         p[0] = reduce(lambda x, y: (BAR, x, y), s)
 
-    def p_inbracket_single(self, p):
+    def p_inbracket_nocaret(self, p):
+        """inbracket : inbracket_nocaret"""
+        p[0] = p[1]
+
+    def p_inbracket_caret(self, p):
+        """inbracket : CARET inbracket_nocaret"""
+        p[0] = set(set(CHARSET) - p[2])
+
+    def p_nocaret_char(self, p):
         """
-        inbracket : CHAR inbracket
-                  | DIGIT inbracket
-                  | DASH inbracket
-                  | CARET inbracket
+        inbracket_nocaret : CHAR inbracket_nocaret
+                          | DIGIT inbracket_nocaret
         """
-        p[0] = p[1] + p[2]
-    def p_inbracket_empty(self, p):
-        """inbracket : """
-        p[0] = ""
+        p[2].add(p[1])
+        p[0] = p[2]
+
+    def p_nocaret_range(self, p):
+        """
+        inbracket_nocaret : CHAR DASH CHAR inbracket_nocaret
+                          | DIGIT DASH DIGIT inbracket_nocaret
+        """
+        begin = ord(p[1])
+        end = ord(p[3])
+        s = set(map(chr, range(begin, end+1)))
+        p[0] = p[4].union(s)
+
+    def p_nocaret_empty(self, p):
+        """inbracket_nocaret : """
+        p[0] = set()
 
     def p_expr_brace1(self, p):
         """expr : expr LBRACE number RBRACE"""
