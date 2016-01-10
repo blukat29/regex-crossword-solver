@@ -45,7 +45,7 @@ class RegexParser:
         ('left', 'BAR'),
         ('left', 'DIGIT', 'DOT', 'CHAR'),
         ('left', 'CONCAT'),
-        ('right', 'STAR', 'PLUS', 'QUESTION', 'LBRACE'),
+        ('right', 'STAR', 'PLUS', 'QUESTION', 'LBRACE', 'RBRACE'),
         ('left', 'LBRACKET', 'LPAREN'),
         ('left', 'BACKSLASH'),
     )
@@ -154,37 +154,37 @@ class RegexParser:
         """inbracket : """
         p[0] = ""
 
-    def p_expr_braces(self, p):
-        """
-        expr : expr LBRACE inbrace RBRACE
-        """
+    def p_expr_brace1(self, p):
+        """expr : expr LBRACE number RBRACE"""
         inner = p[1]
-        inbrace = p[3]
-        if ',' not in inbrace:
-            times = int(inbrace)
-            p[0] = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(times)])
-        else:
-            if ',' == inbrace[-1]:
-                times = int(inbrace[:-1])
-                before = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(times)])
-                p[0] = (CONCAT, before, (STAR, inner))
-            else:
-                times1, times2 = map(int, inbrace.split(','))
-                cases = []
-                for l in range(times1, times2+1):
-                    case = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(l)])
-                    cases.append(case)
-                p[0] = reduce(lambda x, y: (BAR, x, y), cases)
+        times = int(p[3])
+        p[0] = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(times)])
 
-    def p_inbrace_empty(self, p):
-        """inbrace : """
-        p[0] = ""
-    def p_inbrace_single(self, p):
-        """
-        inbrace : DIGIT inbrace
-                | COMMA inbrace
-        """
+    def p_expr_brace2(self, p):
+        """expr : expr LBRACE number COMMA RBRACE"""
+        inner = p[1]
+        times = int(p[3])
+        before = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(times)])
+        p[0] = (CONCAT, before, (STAR, inner))
+
+    def p_expr_brace3(self, p):
+        """expr : expr LBRACE number COMMA number RBRACE"""
+        inner = p[1]
+        times1 = int(p[3])
+        times2 = int(p[5])
+        cases = []
+        for l in range(times1, times2+1):
+            case = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(l)])
+            cases.append(case)
+        p[0] = reduce(lambda x, y: (BAR, x, y), cases)
+
+    def p_number_digit(self, p):
+        """number : DIGIT number"""
         p[0] = p[1] + p[2]
+
+    def p_number_empty(self, p):
+        """number : """
+        p[0] = ""
 
     def p_error(self, p):
         print "Parse error at '%s'" % p.value
