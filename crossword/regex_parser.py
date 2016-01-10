@@ -136,6 +136,7 @@ class RegexParser:
         inbracket_nocaret : CHAR inbracket_nocaret
                           | DIGIT inbracket_nocaret
                           | COMMA inbracket_nocaret
+                          | DOT inbracket_nocaret
         """
         p[2].add(p[1])
         p[0] = p[2]
@@ -144,6 +145,7 @@ class RegexParser:
         """
         inbracket_nocaret : BACKSLASH DASH inbracket_nocaret
                           | BACKSLASH CARET inbracket_nocaret
+                          | BACKSLASH DOT inbracket_nocaret
         """
         p[3].add(p[2])
         p[0] = p[3]

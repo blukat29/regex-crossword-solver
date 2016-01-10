@@ -68,16 +68,9 @@ if __name__ == '__main__':
     test_case(
             ["[A-GN-Z]+"],
             ["[D-HJ-M]","[^A-RU-Z]"],
-            "double cross test 1",
+            "double cross test",
             ["[^A-DI-S]+"],
             ["[^F-KM-Z]","[A-KS-V]"])
-
-    test_case(
-            ["(CAT|AaT)+","[MAa\sE]+"],
-            ["[^MCI]+",".A","(TM|BF)"],
-            "double cross test 2",
-            ["[^KI\sP]+","(M|APS|EA)*"],
-            ["[AI][E\s]","[AaZ]+","[\sTaM]+"])
 
     print "== Summary =="
     for idx, message in enumerate(messages):

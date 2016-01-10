@@ -25,28 +25,53 @@ def autosolve(raw, num_rows, num_cols, double=False):
     print '\n'.join(map(lambda x: ' '.join(x), ans))
 
 autosolve("""
-[HELP\s]+   
-[^\sPONG]+N 
-[SONG]+\s
-[^SEAP]+    
+    
+[O-S\sG-L]+ 
+[ANTIGE]+   
+(S\s|\sS|'A)+   
+[PI\sRD]+   
+(TD|L|LO|O|OH)+ 
+[HITE'\s]+  
+[MENDS]+
+[HEL\s]+P.+ 
 
 
-[\sCOPE]+
-[\sPIN]E[NET]   
 
 
-[^HI\s]+
-[^ONE\s]+   
 
 
-[\sHAG]+
-[END\s]+    
+.[SEPOLI\s]+
+[MI/SON]+[^OLDE]{4} 
 
 
-[^SODA]+
-[^SLIC]+\w  
-[OCEAN\s]+  
-[^SPIES]+
+
+
+
+
+.{3,4}(\sH|\s|IM)+
+[IN'THE\.\s]+   
+
+
+
+
+
+
+[IT'\s]{4}[H.TE]+
+.[A-G]+(R|D)+[END]+ 
+
+
+
+
+
+
+.{4}(NI|TE|N|DE)+
+(\s\s|OR|HO|ME)+    
+[A-G]N+(GI|IG|PI)   
+[RAM\sES']+ 
+[^AINED]+   
+[HORTED]+   
+[F-K]{2}[F-M]..?    
+(S|I|MS)[MYEND]*
 """,
-4, 3, True)
+4,7, True)
 

@@ -126,4 +126,13 @@ class ComplexTest(SolverTestCase):
         self.do_test("(.)(.)\\2\\1[WE]", 5)
         self.do_test("(WE|GA|AL)T*O+", 5)
         self.do_test("(.).*\\1N\\1", 5)
+        self.do_test("[SALT]+O(\sB|S,|E,)+[F\s]", 7)
+        self.do_test("(T|K)[POE]\\1\\1(B|E|\s)*", 6)
+        self.do_test("[I,T]{4}(QN|BA)*", 6)
+        self.do_test(".(L|,|O)[,E\sB]+", 7)
+        self.do_test("[MI/SON]+[^OLDE]{4}", 7)
+        self.do_test("[HITE'\s]+", 4)
+        self.do_test("[IN'THE\.\s]+", 7)
+        self.do_test("[IT'\s]{4}[H.TE]+", 7)
+        self.do_test("[MA\-\sE]+", 3)
 
