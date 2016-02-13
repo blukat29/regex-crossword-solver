@@ -15,12 +15,15 @@ class SimpleTest(ParserTestCase):
     def test_char(self):
         self.do_test("A", (CHAR, 'A'))
         self.do_test("1", (CHAR, '1'))
+    def test_special_char(self):
         self.do_test("\s", (CHAR, ' '))
         self.do_test(":", (CHAR, ':'))
         self.do_test("/", (CHAR, '/'))
         self.do_test("'", (CHAR, '\''))
         self.do_test(",", (CHAR, ','))
         self.do_test("-", (CHAR, '-'))
+    def test_concat(self):
+        self.do_test("AB", (CONCAT, (CHAR, 'A'), (CHAR, 'B')))
     def test_escape(self):
         self.do_test("\.", (CHAR, '.'))
         self.do_test("\*", (CHAR, '*'))
@@ -47,23 +50,39 @@ class SimpleTest(ParserTestCase):
         self.do_test("A?", (BAR, (CHAR, 'A'), (EMPTY,)))
 
 class BracketTest(ParserTestCase):
+    @staticmethod
+    @nottest
+    def extract_chars(root):
+        if root[0] == BAR:
+            l = BracketTest.extract_chars(root[1])
+            r = BracketTest.extract_chars(root[2])
+            return l.union(r)
+        elif root[0] == CHAR:
+            return set([root[1]])
+        else:
+            raise ValueError
+
+    @nottest
+    def do_bracket_test(self, regex, chars):
+        first = parser.parse(regex)
+        try:
+            first_chars = BracketTest.extract_chars(first['root'])
+            self.assertEqual(first_chars, chars)
+        except ValueError:
+            self.assertTrue(False)
+
     def test_simple(self):
-        self.do_test("[ABC]", (BAR, (BAR, (CHAR, 'A'), (CHAR, 'C')),
-                                    (CHAR, 'B')))
-        self.do_test("[D1]", (BAR, (CHAR, '1'), (CHAR, 'D')))
+        self.do_bracket_test("[ABC]", set("ABC"))
+        self.do_bracket_test("[D1]", set("D1"))
     def test_series(self):
-        self.do_test("[M-O]", (BAR, (BAR, (CHAR, 'M'), (CHAR, 'O')),
-                                    (CHAR, 'N')))
+        self.do_bracket_test("[M-O]", set("MNO"))
         self.do_test("[A-A]", (CHAR, 'A'))
-        self.do_test("[X-Y3K-L]", (BAR, (BAR, (BAR, (BAR, (CHAR, 'Y'), (CHAR, 'X')),
-                                                    (CHAR, 'K')),
-                                              (CHAR, 'L')),
-                                        (CHAR, '3')))
+        self.do_bracket_test("[X-Y3K-L]", set("XY3KL"))
     def test_negate(self):
-        self.do_test("[^a-z0-9A-X\s:/']", (BAR, (CHAR, 'Y'), (CHAR, 'Z')))
+        self.do_bracket_test("[^A-Za-z0-9 :/']", set("])(+*-,.?|[{})\\^"))
     def test_special(self):
-        self.do_test("[\-\^]", (BAR, (CHAR, '-'), (CHAR, '^')))
-        self.do_test("[I,T]", (BAR, (BAR, (CHAR, 'I'), (CHAR, 'T')), (CHAR, ',')))
+        self.do_bracket_test("[\-\^]", set("-^"))
+        self.do_bracket_test("[I,T]", set("I,T"))
 
 class BraceTest(ParserTestCase):
     def test_one(self):
@@ -107,9 +126,8 @@ class ComplexTest(ParserTestCase):
     def test_special_char(self):
         self.do_test("A,", (CONCAT, (CHAR, 'A'), (CHAR, ',')))
         self.do_test("\s9", (CONCAT, (CHAR, ' '), (CHAR, '9')))
-        self.do_test("(L|,|O)", (GROUP, 1, (BAR, (BAR, (CHAR, 'L'), (CHAR, ',')),
-                                                 (CHAR, 'O'))),
-                                [(BAR, (BAR, (CHAR, 'L'), (CHAR, ',')), (CHAR, 'O'))],
+        self.do_test("(L|,|O)", (GROUP, 1, (BAR, (CHAR, 'L'), (BAR, (CHAR, ','), (CHAR, 'O')))),
+                                [(BAR, (CHAR, 'L'), (BAR, (CHAR, ','), (CHAR, 'O')))],
                                 set())
     def test_quantifier_precedence(self):
         self.do_test("AB*", (CONCAT, (CHAR, 'A'),
@@ -121,17 +139,14 @@ class ComplexTest(ParserTestCase):
         self.do_test("AB{2}", (CONCAT, (CHAR, 'A'),
                                        (CONCAT, (CHAR, 'B'), (CHAR, 'B'))))
     def test_paren_precedence(self):
-        self.do_test("A(BC)D", (CONCAT,
-                                   (CONCAT, (CHAR, 'A'),
-                                            (GROUP, 1,
-                                                (CONCAT, (CHAR, 'B'), (CHAR, 'C')))),
-                                   (CHAR, 'D')),
-                               [(CONCAT, (CHAR, 'B'), (CHAR, 'C'))],
-                               set())
-        self.do_test("A[BC]D", (CONCAT,
-                                   (CONCAT, (CHAR, 'A'),
-                                            (BAR, (CHAR, 'C'), (CHAR, 'B'))),
-                                   (CHAR, 'D')))
+        root = (CONCAT, (CHAR, 'A'),
+                        (CONCAT, (GROUP, 1, (CONCAT, (CHAR, 'B'), (CHAR, 'C'))),
+                                 (CHAR, 'D')))
+        self.do_test("A(BC)D", root, [(CONCAT, (CHAR, 'B'), (CHAR, 'C'))], set())
+        root = (CONCAT, (CHAR, 'A'),
+                        (CONCAT, (BAR, (CHAR, 'C'), (CHAR, 'B')),
+                                 (CHAR, 'D')))
+        self.do_test("A[BC]D", root)
         self.do_test("(AB)*", (STAR, (GROUP, 1, (CONCAT, (CHAR, 'A'), (CHAR, 'B')))),
                               [(CONCAT, (CHAR, 'A'), (CHAR, 'B'))],
                               set())

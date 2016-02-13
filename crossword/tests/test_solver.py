@@ -132,7 +132,7 @@ class ComplexTest(SolverTestCase):
         self.do_test(".(L|,|O)[,E\sB]+", 7)
         self.do_test("[MI/SON]+[^OLDE]{4}", 7)
         self.do_test("[HITE'\s]+", 4)
-        self.do_test("[IN'THE\.\s]+", 7)
+        self.do_test("[IN'THE.\s]+", 7)
         self.do_test("[IT'\s]{4}[H.TE]+", 7)
         self.do_test("[MA\-\sE]+", 3)
 
