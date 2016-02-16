@@ -135,4 +135,6 @@ class ComplexTest(SolverTestCase):
         self.do_test("[IN'THE.\s]+", 7)
         self.do_test("[IT'\s]{4}[H.TE]+", 7)
         self.do_test("[MA\-\sE]+", 3)
+        self.do_test("(\!|\\'|\.|\?)?P[YO!]+", 4)
+        self.do_test("(A|\?|\?P|NP)+", 4)
 

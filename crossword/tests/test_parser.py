@@ -10,6 +10,25 @@ class ParserTestCase(unittest.TestCase):
         first = parser.parse(regex)
         second = {'groups': groups, 'root': root, 'backrefs': backrefs}
         self.assertEquals(first, second)
+    @staticmethod
+    @nottest
+    def extract_chars(root):
+        if root[0] == BAR:
+            l = BracketTest.extract_chars(root[1])
+            r = BracketTest.extract_chars(root[2])
+            return l.union(r)
+        elif root[0] == CHAR:
+            return set([root[1]])
+        else:
+            raise ValueError
+    @nottest
+    def do_bracket_test(self, regex, chars):
+        first = parser.parse(regex)
+        try:
+            first_chars = BracketTest.extract_chars(first['root'])
+            self.assertEqual(first_chars, chars)
+        except ValueError:
+            self.assertTrue(False)
 
 class SimpleTest(ParserTestCase):
     def test_char(self):
@@ -22,6 +41,7 @@ class SimpleTest(ParserTestCase):
         self.do_test("'", (CHAR, '\''))
         self.do_test(",", (CHAR, ','))
         self.do_test("-", (CHAR, '-'))
+        self.do_test("!", (CHAR, '!'))
     def test_concat(self):
         self.do_test("AB", (CONCAT, (CHAR, 'A'), (CHAR, 'B')))
     def test_escape(self):
@@ -38,39 +58,25 @@ class SimpleTest(ParserTestCase):
         self.do_test("\\\\", (CHAR, '\\'))
         self.do_test("\{", (CHAR, '{'))
         self.do_test("\}", (CHAR, '}'))
+        self.do_test("\!", (CHAR, '!'))
+        self.do_test("\-", (CHAR, '-'))
+        self.do_test("\,", (CHAR, ','))
     def test_dot(self):
         self.do_test(".", (DOT,))
     def test_bar(self):
         self.do_test("A|B", (BAR, (CHAR, 'A'), (CHAR, 'B')))
     def test_star(self):
         self.do_test("A*", (STAR, (CHAR, 'A')))
-    def test_quantifiers(self):
+    def test_plus(self):
         self.do_test("A+", (CONCAT, (CHAR, 'A'),
                                     (STAR, (CHAR, 'A'))))
+    def test_question(self):
         self.do_test("A?", (BAR, (CHAR, 'A'), (EMPTY,)))
+    def test_char_class(self):
+        self.do_test("\s", (CHAR, ' '))
+        self.do_bracket_test("\d", set("0123456789"))
 
 class BracketTest(ParserTestCase):
-    @staticmethod
-    @nottest
-    def extract_chars(root):
-        if root[0] == BAR:
-            l = BracketTest.extract_chars(root[1])
-            r = BracketTest.extract_chars(root[2])
-            return l.union(r)
-        elif root[0] == CHAR:
-            return set([root[1]])
-        else:
-            raise ValueError
-
-    @nottest
-    def do_bracket_test(self, regex, chars):
-        first = parser.parse(regex)
-        try:
-            first_chars = BracketTest.extract_chars(first['root'])
-            self.assertEqual(first_chars, chars)
-        except ValueError:
-            self.assertTrue(False)
-
     def test_simple(self):
         self.do_bracket_test("[ABC]", set("ABC"))
         self.do_bracket_test("[D1]", set("D1"))
@@ -79,10 +85,14 @@ class BracketTest(ParserTestCase):
         self.do_test("[A-A]", (CHAR, 'A'))
         self.do_bracket_test("[X-Y3K-L]", set("XY3KL"))
     def test_negate(self):
-        self.do_bracket_test("[^A-Za-z0-9 :/']", set("])(+*-,.?|[{})\\^"))
+        self.do_bracket_test("[^A-Za-z0-9 :/'!]", set("])(+*-,.?|[{})\\^"))
     def test_special(self):
-        self.do_bracket_test("[\-\^]", set("-^"))
+        self.do_bracket_test("[a\-\^b\]]", set("ab-^]"))
         self.do_bracket_test("[I,T]", set("I,T"))
+        self.do_bracket_test("[.*+?{}()[\]\\\\]", set(".*+?{}()[]\\"))
+    def test_char_class(self):
+        self.do_bracket_test("[\s]", set(" "))
+        self.do_bracket_test("[\d]", set("0123456789"))
 
 class BraceTest(ParserTestCase):
     def test_one(self):
@@ -150,5 +160,4 @@ class ComplexTest(ParserTestCase):
         self.do_test("(AB)*", (STAR, (GROUP, 1, (CONCAT, (CHAR, 'A'), (CHAR, 'B')))),
                               [(CONCAT, (CHAR, 'A'), (CHAR, 'B'))],
                               set())
-
 

@@ -3,7 +3,12 @@ import ply.yacc as yacc
 import string
 
 [EMPTY, CHAR, DOT, STAR, BAR, CONCAT, GROUP, BACKREF] = range(8)
-CHARSET = string.lowercase + string.uppercase + string.digits + " :/'" + ".*+?|()[]^-{},\\"
+CHARSET = string.lowercase + string.uppercase + string.digits + " :/'!" + ".*+?|()[]^-{},\\"
+
+character_classes = {
+    's' : " ",
+    'd' : "0123456789",
+}
 
 class RegexLexer:
     tokens = (
@@ -18,7 +23,7 @@ class RegexLexer:
     )
 
     def t_NON_META_CHAR(self, t):
-        r"[a-zA-Z :/']"
+        r"[a-zA-Z :/'!]"
         return t
     def t_DIGIT(self, t):
         r"[0-9]"
@@ -100,9 +105,23 @@ class RegexParser:
                | BACKSLASH CARET
                | BACKSLASH LBRACE
                | BACKSLASH RBRACE
+               | BACKSLASH DASH
+               | BACKSLASH COMMA
                | BACKSLASH BACKSLASH
         """
         p[0] = (CHAR, p[2])
+    def p_factor_escape_fallback(self, p):
+        """
+        factor : BACKSLASH NON_META_CHAR
+        """
+        if p[2] in ",-/'!":
+            p[0] = (CHAR, p[2])
+        elif p[2] in character_classes:
+            chars = map(lambda x: (CHAR, x), character_classes[p[2]])
+            p[0] = reduce(lambda x, y: (BAR, x, y), chars)
+        else:
+            raise SyntaxError("Unknown escape '%s'" % p[2])
+
     def p_factor_brace_1(self, p):
         """factor : factor LBRACE number RBRACE"""
         inner = p[1]
@@ -156,17 +175,25 @@ class RegexParser:
         p[0] = set(map(chr, range(begin, end+1)))
     def p_set_item_escape(self, p):
         """
-        set_item : BACKSLASH LBRACKET
-                 | BACKSLASH RBRACKET
+        set_item : BACKSLASH RBRACKET
                  | BACKSLASH CARET
                  | BACKSLASH DASH
                  | BACKSLASH BACKSLASH
         """
         p[0] = set([p[2]])
+    def p_set_item_escape_fallback(self, p):
+        """
+        set_item : BACKSLASH set_non_meta_char
+        """
+        if p[2] in character_classes:
+            p[0] = set(character_classes[p[2]])
+        else:
+            p[0] = set(p[2])
 
     def p_set_non_meta_char(self, p):
         """
         set_non_meta_char : NON_META_CHAR
+                          | LBRACKET
                           | DIGIT
                           | DOT
                           | STAR
@@ -190,7 +217,6 @@ class RegexParser:
         self.parser = yacc.yacc(module=self)
 
     def parse(self, s):
-        s = s.replace("\\s"," ")
         self.groups = []
         self.backrefs = set()
         root = self.parser.parse(s, self.lexer.lexer)
