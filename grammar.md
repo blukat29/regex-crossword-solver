@@ -7,8 +7,13 @@ SPECIAL_CHAR : .*+|()[]{},-^\:'!
 DIGIT : [0-9]
 CHARACTER_CLASS : [sd]
 
-regex : term
-      | term "|" regex
+regex : outer_term
+      | outer_term "|" regex
+
+outer_term : term
+           | "^" term
+           | term "$"
+           | "^" term "$"
 
 term : factor
      | factor term

@@ -132,6 +132,22 @@ class GroupTest(ParserTestCase):
                                       [(CHAR, 'A'), (CHAR, 'B')],
                                       set([1,2]))
 
+class StartEndTest(ParserTestCase):
+    def test_caret(self):
+        self.do_test("^A", (CARET, (CHAR, 'A')))
+    def test_dollar(self):
+        self.do_test("B$", (DOLLAR, (CHAR, 'B')))
+        self.do_test("(K|B$)2",
+                (CONCAT, (GROUP, 1, (BAR, (CHAR, 'K'), (DOLLAR, (CHAR, 'B')))), (CHAR, '2')),
+                [(BAR, (CHAR, 'K'), (DOLLAR, (CHAR, 'B')))],
+                set())
+        self.do_test("(Y$|YH)*",
+                (STAR, (GROUP, 1, (BAR, (DOLLAR, (CHAR, 'Y')), (CONCAT, (CHAR, 'Y'), (CHAR, 'H'))))),
+                [(BAR, (DOLLAR, (CHAR, 'Y')), (CONCAT, (CHAR, 'Y'), (CHAR, 'H')))],
+                set())
+    def test_caret_dollar(self):
+        self.do_test("^A$", (DOLLAR, (CARET, (CHAR, 'A'))))
+
 class ComplexTest(ParserTestCase):
     def test_special_char(self):
         self.do_test("A,", (CONCAT, (CHAR, 'A'), (CHAR, ',')))

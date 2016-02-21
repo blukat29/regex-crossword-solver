@@ -2,7 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 import string
 
-[EMPTY, CHAR, DOT, STAR, BAR, CONCAT, GROUP, BACKREF] = range(8)
+[EMPTY, CHAR, DOT, STAR, BAR, CONCAT, GROUP, BACKREF, CARET, DOLLAR] = range(10)
 CHARSET = string.lowercase + string.uppercase + string.digits + " :/'!" + ".*+?|()[]^-{},\\"
 
 character_classes = {
@@ -17,7 +17,7 @@ class RegexLexer:
         "BAR",
         "LPAREN", "RPAREN",
         "LBRACKET", "RBRACKET",
-        "CARET", "DASH",
+        "CARET", "DASH", "DOLLAR",
         "LBRACE", "RBRACE", "COMMA",
         "BACKSLASH",
     )
@@ -32,7 +32,7 @@ class RegexLexer:
     t_BAR = r"\|"
     t_LPAREN, t_RPAREN = r"\(", r"\)"
     t_LBRACKET, t_RBRACKET = r"\[", r"\]"
-    t_CARET, t_DASH = r"\^", r"-"
+    t_CARET, t_DASH, t_DOLLAR = r"\^", r"-", r"\$"
     t_LBRACE, t_RBRACE, t_COMMA = r"\{", r"\}", r","
     t_BACKSLASH = r"\\"
 
@@ -45,11 +45,24 @@ class RegexLexer:
 class RegexParser:
 
     def p_regex_term(self, p):
-        """regex : term"""
+        """regex : outer_term"""
         p[0] = p[1]
     def p_regex_union(self, p):
-        """regex : term BAR regex"""
+        """regex : outer_term BAR regex"""
         p[0] = (BAR, p[1], p[3])
+
+    def p_outer_term_term(self, p):
+        """outer_term : term"""
+        p[0] = p[1]
+    def p_outer_term_caret(self, p):
+        """outer_term : CARET term"""
+        p[0] = (CARET, p[2])
+    def p_outer_term_dollar(self, p):
+        """outer_term : term DOLLAR"""
+        p[0] = (DOLLAR, p[1])
+    def p_outer_term_caret_dollar(self, p):
+        """outer_term : CARET term DOLLAR"""
+        p[0] = (DOLLAR, (CARET, p[2]))
 
     def p_term_factor(self, p):
         """term : factor"""

@@ -2,11 +2,23 @@ import unittest
 import re
 from nose.tools import nottest
 from ..crossword import solve_crossword
+import sys
+import inspect
 
 class CrosswordTestCase(unittest.TestCase):
     @nottest
+    def record_answer(self, answer):
+        name = str(sys._getframe(2).f_code.co_name)
+        sys.stderr.write('\n' + name + '\n')
+        val = ""
+        for row in answer:
+            val += ' '.join(row) + '\n'
+        sys.stderr.write(val)
+
+    @nottest
     def do_test(self, rows, cols, rows2=None, cols2=None):
         answer = solve_crossword(rows, cols, rows2, cols2)
+        #self.record_answer(answer)
         for row in answer:
             print ' '.join(row)
         self.assertNotEqual(answer, None)
@@ -70,4 +82,10 @@ class CrosswordTest(CrosswordTestCase):
                 ["[A5-9\/]+\d(\s|:|\.)", "[T0X\sD]+", "[BMX'S]+N?", "[PA/\sWE]+"],
                 ["[W407OM]+", ".+(D|B)+.?", "[SP1NE\s]+", "[NA:X,S]+"],
                 ["[0-9:A-Z\/\s]+", "(0D|E\s|\sX)+", ".+B(SN|XN|:P)+", "[^\sIN\/5]+"])
+    def test_caret_dollar(self):
+        self.do_test(
+                ["(Y|\d|M)+", "(.H|P|.P)+", "[\dIP\s].+"],
+                ["M[\DIP]*", "(\\\\d|\d.)[\\\\\/B]", "(Y$|YH|\d$)+"],
+                ["[^IB][0-3]Y", "^(P|Y)*(PA|\.H$)", "[PA\\\\d\d]+"],
+                ["(M|A|P)+", "[^2O13]\.\\\\*(A|P)?", "[HOW2Y]+"])
 

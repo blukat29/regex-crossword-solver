@@ -7,10 +7,12 @@ from ..regex_solver import RegexSolver
 class SolverTestCase(unittest.TestCase):
     @nottest
     def do_test(self, regex, length, has_solution=True):
+        print regex, length, has_solution
         v = []
         for i in range(length):
             v.append(z3.Int("x_%d" % i))
         e = RegexSolver(length, regex, v).sat_expr()
+        print e
         solver = z3.Solver()
         solver.add(e)
         check = solver.check()
@@ -119,6 +121,24 @@ class GroupTest(SolverTestCase):
         self.do_test("((a)b)+", 2)
         self.do_test("((a)b)+", 3, False)
         self.do_test("((a)b)+", 4)
+
+class StartEndTest(SolverTestCase):
+    def test_caret(self):
+        self.do_test("^A", 1)
+        self.do_test("^A", 2, False)
+        self.do_test("AB|^A", 1)
+        self.do_test("AB|^A", 2)
+    def test_dollar(self):
+        self.do_test("B$", 1)
+        self.do_test("B$", 2, False)
+        self.do_test("AB|C$", 1)
+        self.do_test("AB|C$", 2)
+    def test_caret_dollar(self):
+        self.do_test("^A$", 1)
+        self.do_test("^A$", 2, False)
+        self.do_test("^(P|Y)*(PA|\.H$)", 3)
+        self.do_test("(Y$|YH|\d$)+", 3)
+        self.do_test("(Y$)+", 3, False)
 
 class ComplexTest(SolverTestCase):
     def test_complex(self):

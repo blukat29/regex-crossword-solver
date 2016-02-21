@@ -70,6 +70,12 @@ class RegexSolver:
             idx = r[1] - 1
             return self._len_set(self.groups[idx])
 
+        elif ty == regex_parser.CARET:
+            return self._len_set(r[1])
+
+        elif ty == regex_parser.DOLLAR:
+            return self._len_set(r[1])
+
         else:
             raise ValueError("Unknown regex_parser type '%s'" % repr(ty))
 
@@ -148,6 +154,20 @@ class RegexSolver:
                     clause = z3.And(clause, (x[i+k] == x[j+k]))
                 expr = z3.Or(expr, clause)
             return expr
+
+        elif ty == regex_parser.CARET:
+            inner = r[1]
+            if i == 0:
+                return self._sat_expr(x, inner, i, l)
+            else:
+                return z3.BoolVal(False)
+
+        elif ty == regex_parser.DOLLAR:
+            inner = r[1]
+            if i + l == self.length:
+                return self._sat_expr(x, inner, i, l)
+            else:
+                return z3.BoolVal(False)
 
         else:
             raise ValueError("Unknown regex_parser type '%s'" % repr(ty))
