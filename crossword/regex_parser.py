@@ -1,9 +1,11 @@
+import string
+from functools import reduce
+
 import ply.lex as lex
 import ply.yacc as yacc
-import string
 
 [EMPTY, CHAR, DOT, STAR, BAR, CONCAT, GROUP, BACKREF, CARET, DOLLAR] = range(10)
-CHARSET = string.lowercase + string.uppercase + string.digits + " :/'!" + ".*+?|()[]^-{},\\"
+CHARSET = string.ascii_lowercase + string.ascii_uppercase + string.digits + " :/'!" + ".*+?|()[]^-{},\\"
 
 character_classes = {
     's' : " ",
@@ -37,7 +39,7 @@ class RegexLexer:
     t_BACKSLASH = r"\\"
 
     def t_error(self, t):
-        print "Lexer error at '%s'" % t.value[0]
+        print ("Lexer error at '%s'" % t.value[0])
 
     def __init__(self):
         self.lexer = lex.lex(module=self)
@@ -222,7 +224,7 @@ class RegexParser:
         p[0] = p[1]
 
     def p_error(self, p):
-        print "Parse error at '%s'" % p.value
+        print ("Parse error at '%s'" % p.value)
 
     def __init__(self):
         self.lexer = RegexLexer()

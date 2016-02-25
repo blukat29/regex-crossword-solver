@@ -20,23 +20,23 @@ class CrosswordTestCase(unittest.TestCase):
         answer = solve_crossword(rows, cols, rows2, cols2)
         #self.record_answer(answer)
         for row in answer:
-            print ' '.join(row)
+            print (' '.join(row))
         self.assertNotEqual(answer, None)
 
         for i in range(len(rows)):
             answer_row = ''.join(answer[i])
-            print answer_row, rows[i]
+            print (answer_row, rows[i])
             self.assertTrue(re.match(rows[i], answer_row))
             if rows2:
-                print answer_row, rows2[i]
+                print (answer_row, rows2[i])
                 self.assertTrue(re.match(rows2[i], answer_row))
 
         for j in range(len(cols)):
             answer_col = ''.join(map(lambda row: row[j], answer))
-            print answer_col, cols[j]
+            print (answer_col, cols[j])
             self.assertTrue(re.match(cols[j], answer_col))
             if cols2:
-                print answer_col, cols2[j]
+                print (answer_col, cols2[j])
                 self.assertTrue(re.match(cols2[j], answer_col))
 
 class CrosswordTest(CrosswordTestCase):

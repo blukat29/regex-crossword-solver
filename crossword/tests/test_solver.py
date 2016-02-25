@@ -7,12 +7,12 @@ from ..regex_solver import RegexSolver
 class SolverTestCase(unittest.TestCase):
     @nottest
     def do_test(self, regex, length, has_solution=True):
-        print regex, length, has_solution
+        print (regex, length, has_solution)
         v = []
         for i in range(length):
             v.append(z3.Int("x_%d" % i))
         e = RegexSolver(length, regex, v).sat_expr()
-        print e
+        print (e)
         solver = z3.Solver()
         solver.add(e)
         check = solver.check()

@@ -1,5 +1,6 @@
 import z3
-import regex_parser
+
+from . import regex_parser
 
 _parser = regex_parser.RegexParser()
 

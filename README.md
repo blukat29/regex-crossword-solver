@@ -1,13 +1,22 @@
 # regex-crossword-solver
 
-[Regex Crossword](https://regexcrossword.com/) solver written in Python.
+[Regex Crossword](https://regexcrossword.com/) solver written in Python. Runs in both Python 2 and 3.
 
 It solves a puzzle by converting the puzzle into equivalent SMT problem. Detailed method is described [here](http://blukat29.github.io/2016/01/regex-crossword-solver/).
 
 ### Requirements
 
 - [PLY (Python Lex-Yacc)](https://github.com/dabeaz/ply)
-- [Z3](https://github.com/Z3Prover/z3) with Python bindings
+- [Z3](https://github.com/Z3Prover/z3) with Python bindings OR [angr-z3](https://github.com/angr/angr-z3)
+
+You can install them by
+
+```
+pip install ply
+pip install angr-only-z3-custom
+```
+
+Make sure you have `/usr/local/lib/` and `$HOME/.local/lib` in `LD_LIBRARY_PATH` environment variable.
 
 ### Usage
 

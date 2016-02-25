@@ -1,5 +1,6 @@
 import z3
-from regex_solver import RegexSolver
+
+from .regex_solver import RegexSolver
 
 def solve_crossword(rows, cols, rows2=None, cols2=None):
     row_cnt = len(rows)
@@ -19,7 +20,7 @@ def solve_crossword(rows, cols, rows2=None, cols2=None):
             e = RegexSolver(col_cnt, rows2[i], v).sat_expr()
             solver.add(e)
     for j in range(col_cnt):
-        v = map(lambda x: x[j], x)
+        v = list(map(lambda x: x[j], x))
         e = RegexSolver(row_cnt, cols[j], v).sat_expr()
         solver.add(e)
         if cols2:
