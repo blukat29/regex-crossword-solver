@@ -38,3 +38,14 @@ def solve_crossword(rows, cols, rows2=None, cols2=None):
     else:
         return None
 
+def solve_regex(regex, length):
+    unknowns = [z3.Int("x_%02d" % i) for i in range(length)]
+    expr = RegexSolver(length, regex, unknowns).sat_expr()
+    solver = z3.Solver()
+    solver.add(expr)
+    if solver.check() == z3.sat:
+        model = solver.model()
+        answer = [model[unknowns[i]].as_long() for i in range(length)]
+        return ''.join(map(chr, answer))
+    else:
+        return None

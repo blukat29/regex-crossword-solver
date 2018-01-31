@@ -22,9 +22,8 @@ Make sure you have `/usr/local/lib/` and `$HOME/.local/lib` in `LD_LIBRARY_PATH`
 
 Solve Regex Crossword puzzle directly.
 
-```
+```py
 >>> from crossword import solve_crossword
-Generating LALR tables
 >>> solve_crossword(["HE|LL|O+","[PLEASE]+"], ["[^SPEAK]+","EP|IP|EF"])
 [['H', 'E'], ['L', 'P']]
 >>> solve_crossword(["[A-GN-Z]+"], ["[D-HJ-M]","[^A-RU-Z]"], ["[^A-DI-S]+"], ["[^F-KM-Z]","[A-KS-V]"])
@@ -34,26 +33,9 @@ Generating LALR tables
 You can also manually find a solution to each regex.
 
 ```py
-import z3
-from crossword import RegexSolver
-
-L = 7
-unknowns = []
-for i in range(L):
-    unknowns.append(z3.Int("x_%02d" % i))
-
-expr = RegexSolver(L, "[SALT]+O(\sB|S,|E,)+[F\s]", unknowns).sat_expr()
-solver = z3.Solver()
-solver.add(expr)
-print solver.check()
-answer = solver.model()
-for i in range(L):
-    print chr(answer[unknowns[i]].as_long()),
-```
-
-```
-sat
-T L T O E , F
+>>> from crossword import solve_regex
+>>> solve_regex("(U|O|I)*T[FRO]+", 5)
+'IIITF'
 ```
 
 ### Run tests
