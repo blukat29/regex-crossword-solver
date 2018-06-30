@@ -4,6 +4,14 @@
 
 It solves a puzzle by converting the puzzle into equivalent SMT problem. Detailed method is described [here](http://blukat29.github.io/2016/01/regex-crossword-solver/).
 
+### Demo
+
+5 x 14 regex crossword posted in [BBC Radio 4 Puzzle for Today](http://www.bbc.co.uk/programmes/articles/5LCB3rN2dWLqsmGMy5KYtBf/puzzle-for-today).
+
+```
+$ python bbc.py
+```
+
 ### Requirements
 
 - [PLY (Python Lex-Yacc)](https://github.com/dabeaz/ply)
