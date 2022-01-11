@@ -27,4 +27,4 @@ cols = [
 
 answer = solve_crossword(rows, cols)
 for line in answer:
-    print '  '.join(line)
+    print ('  '.join(line))

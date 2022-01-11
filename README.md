@@ -20,8 +20,7 @@ $ python bbc.py
 You can install them by
 
 ```
-pip install ply
-pip install angr-only-z3-custom
+pip install ply z3-solver
 ```
 
 Make sure you have `/usr/local/lib/` and `$HOME/.local/lib` in `LD_LIBRARY_PATH` environment variable.
@@ -49,6 +48,7 @@ You can also manually find a solution to each regex.
 ### Run tests
 
 ```
+pip install nose
 nosetests
 ```
 
