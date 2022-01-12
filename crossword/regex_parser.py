@@ -155,6 +155,8 @@ class RegexParser:
         times2 = int(p[5])
         cases = []
         for l in range(times1, times2+1):
+            if l == 0:
+                continue
             case = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(l)])
             cases.append(case)
         p[0] = reduce(lambda x, y: (BAR, x, y), cases)
