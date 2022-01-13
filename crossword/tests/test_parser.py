@@ -106,6 +106,8 @@ class BraceTest(ParserTestCase):
                                            (CONCAT, (CHAR, 'A'), (CHAR, 'A'))),
                                      (CONCAT, (CONCAT, (CHAR, 'A'), (CHAR, 'A')),
                                               (CHAR, 'A'))))
+    def test_four(self):
+        self.do_test("A{0,1}", (CHAR, 'A'))
 
 class GroupTest(ParserTestCase):
     def test_simple(self):
