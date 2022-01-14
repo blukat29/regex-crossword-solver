@@ -67,14 +67,21 @@ class QuantifierTest(SolverTestCase):
         self.do_test("a?", 1)
         self.do_test("a?", 2, False)
     def test_brace_one(self):
+        self.do_test("a{0}", 0)
+        self.do_test("a{0}", 1, False)
         self.do_test("a{2}", 1, False)
         self.do_test("a{2}", 2)
         self.do_test("a{2}", 3, False)
     def test_brace_two(self):
+        self.do_test("a{0,}", 0)
+        self.do_test("a{0,}", 1)
         self.do_test("a{2,}", 1, False)
         self.do_test("a{2,}", 2)
         self.do_test("a{2,}", 3)
     def test_brace_three(self):
+        self.do_test("a{0,2}", 0)
+        self.do_test("a{0,2}", 1)
+        self.do_test("a{0,2}", 2)
         self.do_test("a{2,4}", 1, False)
         self.do_test("a{2,4}", 2)
         self.do_test("a{2,4}", 3)
