@@ -141,12 +141,18 @@ class RegexParser:
         """factor : factor LBRACE number RBRACE"""
         inner = p[1]
         times = int(p[3])
+        if times == 0:
+            p[0] = (EMPTY,)
+            return
         p[0] = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(times)])
     def p_factor_brace_2(self, p):
         """factor : factor LBRACE number COMMA RBRACE"""
         inner = p[1]
         times = int(p[3])
-        prefix = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(times)])
+        if times == 0:
+            prefix = (EMPTY,)
+        else:
+            prefix = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(times)])
         p[0] = (CONCAT, prefix, (STAR, inner))
     def p_factor_brace_3(self, p):
         """factor : factor LBRACE number COMMA number RBRACE"""
@@ -156,6 +162,7 @@ class RegexParser:
         cases = []
         for l in range(times1, times2+1):
             if l == 0:
+                cases.append((EMPTY,))
                 continue
             case = reduce(lambda x, y: (CONCAT, x, y), [inner for _ in range(l)])
             cases.append(case)
