@@ -107,7 +107,7 @@ class BraceTest(ParserTestCase):
                                      (CONCAT, (CONCAT, (CHAR, 'A'), (CHAR, 'A')),
                                               (CHAR, 'A'))))
     def test_four(self):
-        self.do_test("A{0,1}", (CHAR, 'A'))
+        self.do_test("A{0,1}", (BAR, (EMPTY,), (CHAR, 'A')))
 
 class GroupTest(ParserTestCase):
     def test_simple(self):
@@ -133,6 +133,16 @@ class GroupTest(ParserTestCase):
                                                      (BACKREF, 1)))),
                                       [(CHAR, 'A'), (CHAR, 'B')],
                                       set([1,2]))
+        self.do_test("(A|B){2}\\1", (
+            CONCAT,
+                (CONCAT,
+                    (GROUP, CHAR, (BAR, (CHAR, 'A'), (CHAR, 'B'))),
+                    (GROUP, CHAR, (BAR, (CHAR, 'A'), (CHAR, 'B')))
+                ),
+                (BACKREF, 1),
+            ),
+            [(BAR, (CHAR, 'A'), (CHAR, 'B'))],
+            {1})
 
 class StartEndTest(ParserTestCase):
     def test_caret(self):
