@@ -137,11 +137,18 @@ class RegexSolver:
             idx = r[1] - 1
             inner = r[2]
             if (idx+1) in self.backrefs:
-                expr = z3.And(
-                        (self.p[idx] == i),
-                        self._sat_expr(x, inner, i, l)
-                )
-                self.possible_pos[idx].add(i)
+                if inner[0] == regex_parser.BAR:
+                    expr = self._sat_expr(x, inner, i, l)
+                else:
+                    expr = z3.And(
+                            (self.p[idx] == i),
+                            self._sat_expr(x, inner, i, l)
+                    )
+
+                if self.possible_pos[idx]:
+                    self.possible_pos[idx] = {i}
+                else:
+                    self.possible_pos[idx].add(i)
             else:
                 expr = self._sat_expr(x, inner, i, l)
             return expr

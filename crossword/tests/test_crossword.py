@@ -47,6 +47,8 @@ class CrosswordTest(CrosswordTestCase):
     def test_backref_2(self):
         self.do_test(["[UGLER]*","[CAST]*REX[PEA]*","[SIRES]*","(L|OFT|ON)*","H*(AY|ED)*"],
                      ["[ARK]*O.*","(.).*\\1N\\1","(SOD|DO|GE)*","[FAXUS]*","[LOPITY]*"])
+    def test_backref_3(self):
+        self.do_test([r"(ab|defgh){0,2}\1"], ["a", "b", ".", ".", ".", ".", ".", ".", ".", ".", ".", "."])
     def test_special_1(self):
         self.do_test(["[*]+", "/+"], [".?.+", ".+"])
     def test_special_2(self):

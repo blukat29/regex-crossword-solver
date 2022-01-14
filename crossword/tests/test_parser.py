@@ -133,6 +133,16 @@ class GroupTest(ParserTestCase):
                                                      (BACKREF, 1)))),
                                       [(CHAR, 'A'), (CHAR, 'B')],
                                       set([1,2]))
+        self.do_test("(A|B){2}\\1", (
+            CONCAT,
+                (CONCAT,
+                    (GROUP, CHAR, (BAR, (CHAR, 'A'), (CHAR, 'B'))),
+                    (GROUP, CHAR, (BAR, (CHAR, 'A'), (CHAR, 'B')))
+                ),
+                (BACKREF, 1),
+            ),
+            [(BAR, (CHAR, 'A'), (CHAR, 'B'))],
+            {1})
 
 class StartEndTest(ParserTestCase):
     def test_caret(self):

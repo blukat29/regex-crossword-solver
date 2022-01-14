@@ -116,6 +116,22 @@ class GroupTest(SolverTestCase):
         self.do_test("(a)(b)c\\2\\1", 5)
         self.do_test("(.)\\1\\1", 3)
         self.do_test("(..)\\1", 4)
+
+    def test_bar_backref(self):
+        self.do_test(r"(A|B){2}\1", 3)
+        self.do_test(r"(A|B){2}\1", 2, False)
+        self.do_test(r"(ab|defgh){0,2}\1?", 0)
+        # 1 repetition
+        self.do_test(r"(ab|defgh){0,2}\1", 4)
+        self.do_test(r"(ab|defgh){0,2}\1", 10)
+        self.do_test(r"(ab|defgh){0,2}\1", 7, False)
+        self.do_test(r"(ab|defgh){1}\1", 7, False)
+        # 2 repetitions
+        self.do_test(r"(ab|defgh){0,2}\1", 6)   # ababab
+        self.do_test(r"(ab|defgh){0,2}\1", 15)  # defghdefghdefgh
+        self.do_test(r"(ab|defgh){0,2}\1", 9)   # defghabab and abdefghab (not wanted)
+        self.do_test(r"(ab|defgh){0,2}\1", 12)  # abdefghdefgh and defghdefghab (not wanted)
+
     def test_bar(self):
         self.do_test("(LR|EO|\sN)+", 2)
         self.do_test("(ab|defgh)+", 2)
